@@ -58,8 +58,6 @@ RUN apt-get update \
        cron \
        sudo \
        pwgen \
-       apache2 \
-       libapache2-mod-wsgi-py3 \
        nbtscan \
        libpq5 \
        git \
@@ -90,16 +88,14 @@ RUN mkdir /var/log/nav && chown nav /var/log/nav
 RUN mkdir -p /var/lib/nav/uploads/images/rooms && mkdir -p /var/lib/nav/htdocs/static && chown -R nav /var/lib/nav
 
 RUN mkdir -p /usr/local/share/nav/var && \
-    ln -s /var/lib/nav/uploads /usr/local/share/nav/var/uploads && \
-    mkdir -p /usr/local/share/nav/www && \
-    ln -s /var/lib/nav/htdocs/static /usr/local/share/nav/www/static && \
-    django-admin collectstatic --noinput --settings=nav.django.settings
+    ln -s /var/lib/nav/uploads /usr/local/share/nav/var/uploads
 
 # Install our config and entrypoints
 COPY etc/ /etc
 COPY docker-entrypoint.sh /
 COPY docker-initdb.sh /
-RUN a2dissite 000-default; a2ensite nav-site
+COPY ./gunicorn.conf.py ./gunicorn.conf.py
+RUN pip3 install gunicorn
 
 # Run all NAV processes in one container by default
 CMD ["/usr/bin/supervisord", "-n"]
@@ -111,4 +107,4 @@ ENV    DEFAULT_FROM_EMAIL nav@localhost
 ENV    DOMAIN_SUFFIX .example.org
 
 VOLUME ["/var/log/nav", "/var/lib/nav/uploads/images/rooms"]
-EXPOSE 80
+EXPOSE 8000

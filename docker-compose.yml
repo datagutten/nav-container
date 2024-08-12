@@ -6,11 +6,11 @@ services:
       args:
         NAV_VERSION: 5.9.0
     ports:
-      - "80:80"
       - "162:162/udp"
     volumes:
       - logs:/var/log/nav:Z
       - roomimages:/var/lib/nav/uploads/images/rooms:Z
+      - static:/usr/local/share/nav/www
     depends_on:
       - postgres
       - carbon-cache
@@ -58,6 +58,18 @@ services:
       - whisper:/var/lib/graphite/storage/whisper:z
     restart: always
 
+  nginx:
+    build: ./nginx
+    ports:
+    - "80:80"
+    volumes:
+      - static:/home/app/nav
+      - roomimages:/home/app/nav_uploads
+
+    depends_on:
+    - nav
+    restart: always
+
 volumes:
   whisper:
     driver: local
@@ -67,3 +79,4 @@ volumes:
     driver: local
   roomimages:
     driver: local
+  static:

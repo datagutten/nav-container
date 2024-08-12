@@ -77,7 +77,14 @@ cat /etc/nav/cron.d/* | crontab -u nav -
 ##########################################
 chown -R nav /var/lib/nav/uploads/images/rooms
 chown -R nav /var/log/nav
-mkdir -p /var/run/apache2; chown www-data /var/run/apache2
+
+##########################################
+#                                        #
+# Collect static and start gunicorn      #
+#                                        #
+##########################################
+django-admin collectstatic --noinput --settings=nav.django.settings
+gunicorn
 
 ##########################
 #                        #
