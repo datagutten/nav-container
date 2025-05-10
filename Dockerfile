@@ -1,38 +1,8 @@
-FROM python:3.9-slim-bullseye AS builder
-ENV REPO deb.debian.org
-ENV GIT_COMMITTER_NAME Dummy
-ENV GIT_COMMITTER_EMAIL dummy@example.org
-# We need source archives as well
-RUN echo "\n\
-\
-deb http://security.debian.org/ bullseye-security main contrib non-free\n\
-deb-src http://security.debian.org/ bullseye-security main contrib non-free\n\
-deb http://$REPO/debian bullseye main contrib non-free\n\
-deb-src http://$REPO/debian bullseye main contrib non-free\n\
-deb http://$REPO/debian bullseye-updates main contrib non-free\n\
-deb-src http://$REPO/debian bullseye-updates main contrib non-free\n\
-deb http://deb.debian.org/debian bullseye-backports main contrib non-free\n\
-" > /etc/apt/sources.list
+FROM python:3.11-bookworm AS builder
 
-# Unfortunately, we need heaps of stuff just to build the docs, since autodoc
-# requires Python imports to work. In other words, these requirements are
-# normally only needed for the runtime.
-RUN apt-get update \
-    && apt-get -y --no-install-recommends build-dep \
-       python3-psycopg2 \
-       python3-lxml \
-       python3-pil \
-       python3-ldap
-
-# Enable us to build the python-gammu module:
 RUN apt-get update \
     && apt-get -y install \
-       libgammu-dev
-
-# No git in slim image
-RUN apt-get update \
-    && apt-get -y install \
-       git
+    git libldap2-dev libsasl2-dev libjpeg-dev libgammu-dev
 
 # Build wheels from requirements so they can be re-used in a production image
 # without installing all the dev tools there too
@@ -48,7 +18,7 @@ RUN --mount=type=cache,target=/root/.cache/pip pip3 wheel -w ./.wheels/ -r nav/r
 RUN --mount=type=cache,target=/root/.cache/pip pip3 install --root="/source/.build" ./nav
 
 # Now, build the actual installation stage
-FROM python:3.9-slim-bullseye
+FROM python:3.11-slim-bookworm
 
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
