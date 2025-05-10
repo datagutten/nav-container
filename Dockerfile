@@ -101,10 +101,10 @@ RUN pip3 install gunicorn
 CMD ["/usr/bin/supervisord", "-n"]
 
 # Final environment
-ENV    PATH /usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
-ENV    ADMIN_MAIL root@localhost
-ENV    DEFAULT_FROM_EMAIL nav@localhost
-ENV    DOMAIN_SUFFIX .example.org
+ENV    PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
+ENV    ADMIN_MAIL=root@localhost
+ENV    DEFAULT_FROM_EMAIL=nav@localhost
+ENV    DOMAIN_SUFFIX=.example.org
 
 VOLUME ["/var/log/nav", "/var/lib/nav/uploads/images/rooms"]
 EXPOSE 8000
