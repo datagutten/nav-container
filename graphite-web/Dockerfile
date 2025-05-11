@@ -12,22 +12,18 @@ ENV GRAPHITE_STORAGE_DIR=/var/lib/graphite/whisper
 RUN apt-get -y update && \
     apt-get -y install graphite-web supervisor nginx-light gunicorn
 
-# Basic configuration and permissions
-
 # Copy configuration files
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY local_settings.py ${GRAPHITE_CONF_DIR}/local_settings.py
+COPY launcher.sh /launcher.sh
+RUN chmod +x /launcher.sh
 
-# Initialize database
 ENV DJANGO_SETTINGS_MODULE=graphite.settings
 ENV GRAPHITE_SETTINGS_MODULE=local_settings
-RUN mkdir -p ${GRAPHITE_STORAGE_DIR} && chown _graphite:_graphite ${GRAPHITE_STORAGE_DIR}
 
-USER _graphite
-RUN /usr/bin/django-admin migrate --run-syncdb
 USER root
 
 EXPOSE 80
 VOLUME ["/var/lib/graphite/whisper"]
-CMD    ["/usr/bin/supervisord", "-c", "/etc/supervisor/supervisord.conf"]
+CMD ["/launcher.sh"]
