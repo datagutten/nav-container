@@ -14,18 +14,9 @@ services:
       - postgres
       - carbon-cache
       - graphite-web
-    environment:
-      - PGHOST=postgres
-      - PGDATABASE=nav
-      - PGUSER=nav
-      - PGPASSWORD=s3cret
-      - PGPORT=5432
-      - CARBONHOST=carbon-cache
-      - CARBONPORT=2003
-      - GRAPHITEWEB=http://graphite-web/
-      - NOINITDB=0
     env_file:
       - nav-variables.env
+      - nav-common.env
     restart: always
 
   postgres:
