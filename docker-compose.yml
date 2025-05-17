@@ -1,23 +1,59 @@
 services:
   nav:
-    build:
-      context: .
-      args:
-        NAV_VERSION: 5.9.0
-    ports:
-      - "162:162/udp"
+    image: docker.datagutten.net/nav-gunicorn:${NAV_VERSION}
     volumes:
       - logs:/var/log/nav:Z
       - roomimages:/var/lib/nav/uploads/images/rooms:Z
-      - static:/usr/local/share/nav/www
     depends_on:
       - postgres
-      - carbon-cache
+      - nav-backend
       - graphite-web
     env_file:
       - nav-variables.env
       - nav-common.env
     restart: always
+
+  nav-backend:
+    image: docker.datagutten.net/nav-backend:${NAV_VERSION}
+    ports:
+      - "162:162/udp"
+    volumes:
+    - logs:/var/log/nav:Z
+    depends_on:
+    - postgres
+    - carbon-cache
+
+    env_file:
+    - nav-variables.env
+    - nav-common.env
+    restart: always
+
+  ipdevpoll:
+    image: docker.datagutten.net/nav-base:${NAV_VERSION}
+
+    env_file:
+    - nav-variables.env
+    - nav-common.env
+    depends_on:
+    - postgres
+    - carbon-cache
+    restart: always
+    command:
+    - /usr/local/bin/ipdevpolld
+    - -f # Run in foreground
+    - -s # Log to stderr
+
+  pping:
+    image: docker.datagutten.net/nav-base:${NAV_VERSION}
+    env_file:
+    - nav-variables.env
+    - nav-common.env
+    depends_on:
+    - postgres
+    restart: always
+    command:
+    - /usr/local/bin/pping
+    - -f # Run in foreground
 
   postgres:
     image: "docker.io/postgres:15"
@@ -31,13 +67,13 @@ services:
     restart: always
 
   carbon-cache:
-    build: ./carbon-cache
+    image: docker.datagutten.net/nav-carbon-cache
     volumes:
       - whisper:/var/lib/graphite/whisper:z
     restart: always
 
   graphite-web:
-    build: ./graphite-web
+    image: docker.datagutten.net/nav-graphite-web
     # We don't really want this to be public, since there is no authentication
     # ports:
     #   - "8000:80"
@@ -49,11 +85,10 @@ services:
     restart: always
 
   nginx:
-    build: ./nginx
+    image: docker.datagutten.net/nav-nginx:${NAV_VERSION}
     ports:
     - "80:80"
     volumes:
-      - static:/home/app/nav
       - roomimages:/home/app/nav_uploads
 
     depends_on:
@@ -69,4 +104,3 @@ volumes:
     driver: local
   roomimages:
     driver: local
-  static:
