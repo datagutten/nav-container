@@ -11,7 +11,7 @@ RUN mkdir /.cache && chmod 777 /.cache
 
 RUN mkdir /source
 WORKDIR /source
-ARG NAV_VERSION
+ARG NAV_VERSION=master
 RUN git clone https://github.com/Uninett/nav.git nav --branch ${NAV_VERSION} --depth 1
 RUN mkdir -p .wheels
 RUN --mount=type=cache,target=/root/.cache/pip pip3 wheel -w ./.wheels/ -r nav/requirements.txt -c nav/constraints.txt python-gammu==3.2.4
@@ -23,10 +23,7 @@ FROM python:3.11-slim-bookworm
 RUN apt-get update \
     && apt-get -y --no-install-recommends install \
        tini \
-       supervisor \
        libsnmp40 \
-       cron \
-       sudo \
        pwgen \
        nbtscan \
        libpq5 \
@@ -38,8 +35,7 @@ RUN apt-get update \
 # Use tini as our image init process
 ENTRYPOINT ["/usr/bin/tini", "--", "/docker-entrypoint.sh"]
 
-ARG NAV_VERSION
-LABEL maintainer="Morten Brekkevold <morten.brekkevold@sikt.no>"
+ARG NAV_VERSION=master
 LABEL description="Network Administration Visualized ${NAV_VERSION}"
 
 # Install python module dependencies, assuming they have already been made
@@ -55,20 +51,13 @@ RUN adduser --system --group --home=/usr/local/nav --shell=/bin/bash nav
 COPY --from=builder /source/.build/ /
 RUN mkdir /etc/nav &&  chown nav /etc/nav && su nav -c 'nav config install /etc/nav'
 RUN mkdir /var/log/nav && chown nav /var/log/nav
-RUN mkdir -p /var/lib/nav/uploads/images/rooms && mkdir -p /var/lib/nav/htdocs/static && chown -R nav /var/lib/nav
-
-RUN mkdir -p /usr/local/share/nav/var && \
-    ln -s /var/lib/nav/uploads /usr/local/share/nav/var/uploads
 
 # Install our config and entrypoints
-COPY etc/ /etc
 COPY docker-entrypoint.sh /
 COPY docker-initdb.sh /
-COPY ./gunicorn.conf.py ./gunicorn.conf.py
-RUN pip3 install gunicorn
 
-# Run all NAV processes in one container by default
-CMD ["/usr/bin/supervisord", "-n"]
+RUN chmod +x /docker-entrypoint.sh
+RUN chmod +x /docker-initdb.sh
 
 # Final environment
 ENV    PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin

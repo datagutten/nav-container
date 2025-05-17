@@ -62,29 +62,12 @@ EOF
 done
 
 
-############################
-#                          #
-# Set up all NAV cron jobs #
-#                          #
-############################
-cat /etc/nav/cron.d/* | crontab -u nav -
-
-
 ##########################################
 #                                        #
 # Verify permissions on writable volumes #
 #                                        #
 ##########################################
-chown -R nav /var/lib/nav/uploads/images/rooms
 chown -R nav /var/log/nav
-
-##########################################
-#                                        #
-# Collect static and start gunicorn      #
-#                                        #
-##########################################
-django-admin collectstatic --noinput --settings=nav.django.settings
-gunicorn
 
 ##########################
 #                        #
