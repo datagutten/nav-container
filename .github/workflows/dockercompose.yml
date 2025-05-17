@@ -15,12 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: docker-compose build
-        run: |
-          docker-compose build
+      - name: build
+        run: build_latest.sh
 
       - name: Verify containers stay running at least 1 minute
         run: |
+          export NAV_VERSION=$(cat latest_version.txt)
           docker-compose up -d
           sleep 60
           docker-compose ps

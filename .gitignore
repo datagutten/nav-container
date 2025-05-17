@@ -2,3 +2,5 @@
 /.wheels
 /data
 /carbon-cache/storage-*.conf
+/docker-compose.override.yml
+/latest_version.txt
