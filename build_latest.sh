@@ -8,7 +8,7 @@ export NAV_VERSION=$(cat latest_version.txt)
 
 ./build.sh "${NAV_VERSION}"
 
-docker tag docker.datagutten.net/nav-base:${NAV_VERSION} docker.datagutten.net/nav-base:latest
-docker tag docker.datagutten.net/nav-backend:${NAV_VERSION} docker.datagutten.net/nav-backend:latest
-docker tag docker.datagutten.net/nav-gunicorn:${NAV_VERSION} docker.datagutten.net/nav-gunicorn:latest
-docker tag docker.datagutten.net/nav-nginx:${NAV_VERSION} docker.datagutten.net/nav-nginx:latest
+docker tag ghcr.io/datagutten/nav-base:${NAV_VERSION} ghcr.io/datagutten/nav-base:latest
+docker tag ghcr.io/datagutten/nav-backend:${NAV_VERSION} ghcr.io/datagutten/nav-backend:latest
+docker tag ghcr.io/datagutten/nav-gunicorn:${NAV_VERSION} ghcr.io/datagutten/nav-gunicorn:latest
+docker tag ghcr.io/datagutten/nav-nginx:${NAV_VERSION} ghcr.io/datagutten/nav-nginx:latest

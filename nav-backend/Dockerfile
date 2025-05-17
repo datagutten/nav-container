@@ -1,5 +1,5 @@
 ARG NAV_VERSION=master
-FROM nav-base:$NAV_VERSION
+FROM ghcr.io/datagutten/nav-base:$NAV_VERSION
 RUN apt-get update && apt-get -y install snmptrapd cron supervisor
 
 COPY etc/ /etc

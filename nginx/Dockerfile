@@ -1,6 +1,6 @@
 ARG NAV_VERSION=master
 
-FROM nav-base:$NAV_VERSION AS static
+FROM ghcr.io/datagutten/nav-base:$NAV_VERSION AS static
 RUN mkdir -p /usr/local/share/nav/var/uploads
 RUN django-admin collectstatic --noinput --settings=nav.django.settings
 
@@ -15,7 +15,7 @@ RUN npm install
 RUN npm run build:sass
 
 
-FROM nav-base:$NAV_VERSION AS doc
+FROM ghcr.io/datagutten/nav-base:$NAV_VERSION AS doc
 COPY --from=css /nav /nav
 WORKDIR /nav
 RUN sed -i s/sphinx_rtd_theme/sphinx-rtd-theme/ doc/requirements.txt # Fix typo in doc/requirements.txt

@@ -1,6 +1,6 @@
 services:
   nav:
-    image: docker.datagutten.net/nav-gunicorn:${NAV_VERSION}
+    image: ghcr.io/datagutten/nav-gunicorn:${NAV_VERSION}
     volumes:
       - logs:/var/log/nav:Z
       - roomimages:/var/lib/nav/uploads/images/rooms:Z
@@ -14,7 +14,7 @@ services:
     restart: always
 
   nav-backend:
-    image: docker.datagutten.net/nav-backend:${NAV_VERSION}
+    image: ghcr.io/datagutten/nav-backend:${NAV_VERSION}
     ports:
       - "162:162/udp"
     volumes:
@@ -29,7 +29,7 @@ services:
     restart: always
 
   ipdevpoll:
-    image: docker.datagutten.net/nav-base:${NAV_VERSION}
+    image: ghcr.io/datagutten/nav-base:${NAV_VERSION}
 
     env_file:
     - nav-variables.env
@@ -44,7 +44,7 @@ services:
     - -s # Log to stderr
 
   pping:
-    image: docker.datagutten.net/nav-base:${NAV_VERSION}
+    image: ghcr.io/datagutten/nav-base:${NAV_VERSION}
     env_file:
     - nav-variables.env
     - nav-common.env
@@ -67,13 +67,13 @@ services:
     restart: always
 
   carbon-cache:
-    image: docker.datagutten.net/nav-carbon-cache
+    image: ghcr.io/datagutten/nav-carbon-cache
     volumes:
       - whisper:/var/lib/graphite/whisper:z
     restart: always
 
   graphite-web:
-    image: docker.datagutten.net/nav-graphite-web
+    image: ghcr.io/datagutten/nav-graphite-web
     # We don't really want this to be public, since there is no authentication
     # ports:
     #   - "8000:80"
@@ -85,7 +85,7 @@ services:
     restart: always
 
   nginx:
-    image: docker.datagutten.net/nav-nginx:${NAV_VERSION}
+    image: ghcr.io/datagutten/nav-nginx:${NAV_VERSION}
     ports:
     - "80:80"
     volumes:

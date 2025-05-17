@@ -1,6 +1,6 @@
 ARG NAV_VERSION=master
 
-FROM nav-base:$NAV_VERSION
+FROM ghcr.io/datagutten/nav-base:${NAV_VERSION}
 COPY ./gunicorn.conf.py ./gunicorn.conf.py
 RUN pip install gunicorn
 
