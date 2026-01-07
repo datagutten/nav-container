@@ -64,6 +64,7 @@ ENV    PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/sbin:/sbin:/bin
 ENV    ADMIN_MAIL=root@localhost
 ENV    DEFAULT_FROM_EMAIL=nav@localhost
 ENV    DOMAIN_SUFFIX=.example.org
+ENV    NAV_CONFIG_DIR=/etc/nav
 
 VOLUME ["/var/log/nav", "/var/lib/nav/uploads/images/rooms"]
 EXPOSE 8000
